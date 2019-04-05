@@ -1,0 +1,32 @@
+{
+  "name": "nodejwt",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://write2lloyd@github.com/write2lloyd/nodeJWT.git"
+  },
+  "author": "Lloyd Dsouza",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/write2lloyd/nodeJWT/issues"
+  },
+  "homepage": "https://github.com/write2lloyd/nodeJWT#readme",
+  "dependencies": {
+    "basic-auth": "^2.0.0",
+    "body-parser": "~1.16.0",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.0",
+    "express": "^4.16.4",
+    "figlet": "^1.2.0",
+    "jade": "~1.11.0",
+    "moment": "^2.22.2",
+    "mongoose": "5.4.21",
+    "morgan": "~1.7.0",
+    "serve-favicon": "~2.3.2"
+  }
+}
