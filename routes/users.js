@@ -1,32 +1,77 @@
 var express = require('express');
 var router = express.Router();
-var config = require('../config.js');
-var mongoose = require('mongoose');
+const Product = require('../models/user');
 
-mongoose.connect('mongodb+srv://mongouser:mongouser@node-jwt-vayve.mongodb.net/test?retryWrites=true',{useNewUrlParser: true});
-var db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function() {
-  console.log('connected');
-});
 router.get('/', function(req, res, next) {
-    res.status(200).send('get all users');
+    Product.find().exec()
+    .then(users => {
+        console.log(users.length);
+        res.status(200).send(users);
+    })
+    .catch(err => {
+        res.status(500).send(err);
+    })
 });
 
 router.get('/:userid', function(req, res, next) {
-    res.status(200).send('get one user');
+    const userid = req.params.userid;
+    Product.findById(userid).exec()
+    .then(user => {
+        console.log(user);
+        if (user) {
+            res.status(200).send(user);
+        } else {
+            res.status(400).send('User not found');
+        } 
+    })
+    .catch(err => {
+        res.status(500).send(err);
+    })
 });
 
 router.put('/:userid', function(req, res, next) {
-    res.status(200).send('update user');
+    const userid = req.params.userid
+    Product.update({_id: userid}, {$set: {
+        firstname: req.body.firstname,
+        lastname: req.body.lastname,
+        mobile: req.body.mobile,
+        profileimage: req.body.profileimage,
+        dob: req.body.dob
+    }}).exec().
+    then(result => {
+        res.status(200).send(result);
+    }).catch(err => {
+        res.status(500).send(error);
+    })
 });
 
 router.post('/', function(req, res, next) {
-    res.status(200).send('insert user');
+    const product = new Product({
+        firstname: req.body.firstname,
+        lastname: req.body.lastname,
+        mobile: req.body.mobile,
+        profileimage: req.body.profileimage,
+        dob: req.body.dob
+    });
+    product.save()
+        .then(result => {
+            console.log(result);
+            res.status(200).send(result);
+        })
+        .catch(err => {
+            console.log(error);
+            res.status(500).send('An error occurred');
+        })
+    
 });
 
 router.delete('/:userid', function(req, res, next) {
-    res.status(200).send('delete user');
+    const userid = req.params.userid;
+    Product.remove({_id: userid}).exec()
+    .then(result => {
+        res.status(200).send(result);
+    })
+    .catch(err => console.log(err))
 });
 
 module.exports = router;
