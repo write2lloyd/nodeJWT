@@ -16,6 +16,7 @@ app.use(logger('dev'));
 const PORT = 3000;
 
 var auth = require('./auth');
+app.use('/uploads', express.static('uploads'));
 app.use(auth);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -35,11 +36,6 @@ var server = app.listen(process.env.PORT || PORT, function() {
 mongoose.connect(config.mongodb.connectionString, {useNewUrlParser: true})
     .then(()=> console.log("MongoDB Connected"))
     .catch(err => console.log(err))
-// var db = mongoose.connection;
-// db.on('error', console.error.bind(console, 'connection error:'));
-// db.once('open', function() {
-//   console.log('connected');
-// });
 
 // TODO increasing to accomadate the current process
 // Need to reduce this when refactoring

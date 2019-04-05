@@ -1,6 +1,20 @@
 var express = require('express');
 var router = express.Router();
 const Product = require('../models/user');
+const multer = require('multer');
+
+const storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+        cb(null, './uploads');
+    },
+    filename: function(req, file, cb) {
+        cb(null, req.body.firstname + '_' + file.originalname);
+    }
+});
+
+const upload = multer({storage: storage});
+
+
 
 router.get('/', function(req, res, next) {
     Product.find().exec()
@@ -45,12 +59,13 @@ router.put('/:userid', function(req, res, next) {
     })
 });
 
-router.post('/', function(req, res, next) {
+router.post('/', upload.single('displayimage'), function(req, res, next) {
+    console.log(req.file);
     const product = new Product({
         firstname: req.body.firstname,
         lastname: req.body.lastname,
         mobile: req.body.mobile,
-        profileimage: req.body.profileimage,
+        profileimage: req.file.path,
         dob: req.body.dob
     });
     product.save()
