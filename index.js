@@ -13,7 +13,7 @@ var users = require('./routes/users');
 
 app.use(logger('dev'));
 
-const PORT = 3000;
+const PORT = 3001;
 
 var auth = require('./auth');
 app.use('/uploads', express.static('uploads'));
