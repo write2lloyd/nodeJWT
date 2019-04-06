@@ -46,8 +46,7 @@ router.get('/:userid', function(req, res, next) {
     })
 });
 
-router.put('/:userid', upload.single('displaimage'), checkAuth, function(req, res, next) {
-    console.log(req.file);
+router.put('/:userid', upload.single('displayimage'), checkAuth, function(req, res, next) {
     const userid = req.params.userid
     User.update({_id: userid}, {$set: {
         firstname: req.body.firstname,
@@ -64,7 +63,6 @@ router.put('/:userid', upload.single('displaimage'), checkAuth, function(req, re
 });
 
 router.post('/', upload.single('displayimage'), function(req, res, next) {
-    console.log(req.file);
     const user = new User({
         firstname: req.body.firstname,
         lastname: req.body.lastname,
