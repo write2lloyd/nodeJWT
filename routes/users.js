@@ -1,7 +1,10 @@
 var express = require('express');
 var router = express.Router();
-const Product = require('../models/user');
+const User = require('../models/user');
 const multer = require('multer');
+const jwt = require('jsonwebtoken');
+const config = require('../config');
+const checkAuth = require('../middleware/check-auth');
 
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
@@ -17,7 +20,7 @@ const upload = multer({storage: storage});
 
 
 router.get('/', function(req, res, next) {
-    Product.find().exec()
+    User.find().exec()
     .then(users => {
         console.log(users.length);
         res.status(200).send(users);
@@ -29,7 +32,7 @@ router.get('/', function(req, res, next) {
 
 router.get('/:userid', function(req, res, next) {
     const userid = req.params.userid;
-    Product.findById(userid).exec()
+    User.findById(userid).exec()
     .then(user => {
         console.log(user);
         if (user) {
@@ -43,9 +46,9 @@ router.get('/:userid', function(req, res, next) {
     })
 });
 
-router.put('/:userid', function(req, res, next) {
+router.put('/:userid', checkAuth, function(req, res, next) {
     const userid = req.params.userid
-    Product.update({_id: userid}, {$set: {
+    User.update({_id: userid}, {$set: {
         firstname: req.body.firstname,
         lastname: req.body.lastname,
         mobile: req.body.mobile,
@@ -61,17 +64,25 @@ router.put('/:userid', function(req, res, next) {
 
 router.post('/', upload.single('displayimage'), function(req, res, next) {
     console.log(req.file);
-    const product = new Product({
+    const user = new User({
         firstname: req.body.firstname,
         lastname: req.body.lastname,
         mobile: req.body.mobile,
         profileimage: req.file.path,
         dob: req.body.dob
     });
-    product.save()
+    user.save()
         .then(result => {
             console.log(result);
-            res.status(200).send(result);
+            const token = jwt.sign({
+                id: result._id
+            }, config.jwt.secret,{
+                expiresIn: "1h"
+            });
+            res.status(200).json({
+                result: result,
+                token: token
+            });
         })
         .catch(err => {
             console.log(error);
@@ -80,9 +91,9 @@ router.post('/', upload.single('displayimage'), function(req, res, next) {
     
 });
 
-router.delete('/:userid', function(req, res, next) {
+router.delete('/:userid', checkAuth, function(req, res, next) {
     const userid = req.params.userid;
-    Product.remove({_id: userid}).exec()
+    User.remove({_id: userid}).exec()
     .then(result => {
         res.status(200).send(result);
     })
