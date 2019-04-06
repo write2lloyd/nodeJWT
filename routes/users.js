@@ -46,13 +46,14 @@ router.get('/:userid', function(req, res, next) {
     })
 });
 
-router.put('/:userid', checkAuth, function(req, res, next) {
+router.put('/:userid', upload.single('displaimage'), checkAuth, function(req, res, next) {
+    console.log(req.file);
     const userid = req.params.userid
     User.update({_id: userid}, {$set: {
         firstname: req.body.firstname,
         lastname: req.body.lastname,
         mobile: req.body.mobile,
-        profileimage: req.body.profileimage,
+        profileimage: req.file.path,
         dob: req.body.dob
     }}).exec().
     then(result => {
