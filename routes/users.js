@@ -24,6 +24,8 @@ router.put('/:userid', checkAuth, upload.single('displayimage'), UsersController
 
 router.post('/', upload.single('displayimage'), UsersController.addUser);
 
+router.post('/login', UsersController.login);
+
 router.delete('/:userid', checkAuth, UsersController.deleteUser);
 
 module.exports = router;
