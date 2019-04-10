@@ -25,6 +25,12 @@ Some endpoints like the PUT and DELETE need a valid JWT token which you will get
 | JWT | No |
 |  |  |
 |  |  |
+| POST | /users/login |
+| Desc | Logs in a registered user and returns a JWT token|
+| Basic Auth | Yes |
+| JWT | No |
+|  |  |
+|  |  |
 | PUT | /users/:userid |
 | Desc | Update a registered user|
 | Basic Auth | Yes |
