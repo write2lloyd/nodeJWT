@@ -1,10 +1,9 @@
 var express = require('express');
 var router = express.Router();
-const User = require('../models/user');
 const multer = require('multer');
-const jwt = require('jsonwebtoken');
-const config = require('../config');
 const checkAuth = require('../middleware/check-auth');
+
+const UsersController = require('../controllers/users');
 
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
@@ -17,86 +16,14 @@ const storage = multer.diskStorage({
 
 const upload = multer({storage: storage});
 
+router.get('/', UsersController.getAllUsers);
 
+router.get('/:userid', UsersController.getUser);
 
-router.get('/', function(req, res, next) {
-    User.find().exec()
-    .then(users => {
-        console.log(users.length);
-        res.status(200).send(users);
-    })
-    .catch(err => {
-        res.status(500).send(err);
-    })
-});
+router.put('/:userid', checkAuth, upload.single('displayimage'), UsersController.updateUser);
 
-router.get('/:userid', function(req, res, next) {
-    const userid = req.params.userid;
-    User.findById(userid).exec()
-    .then(user => {
-        console.log(user);
-        if (user) {
-            res.status(200).send(user);
-        } else {
-            res.status(400).send('User not found');
-        } 
-    })
-    .catch(err => {
-        res.status(500).send(err);
-    })
-});
+router.post('/', upload.single('displayimage'), UsersController.addUser);
 
-router.put('/:userid', upload.single('displayimage'), checkAuth, function(req, res, next) {
-    const userid = req.params.userid
-    User.update({_id: userid}, {$set: {
-        firstname: req.body.firstname,
-        lastname: req.body.lastname,
-        mobile: req.body.mobile,
-        profileimage: req.file.path,
-        dob: req.body.dob
-    }}).exec().
-    then(result => {
-        res.status(200).send(result);
-    }).catch(err => {
-        res.status(500).send(error);
-    })
-});
-
-router.post('/', upload.single('displayimage'), function(req, res, next) {
-    const user = new User({
-        firstname: req.body.firstname,
-        lastname: req.body.lastname,
-        mobile: req.body.mobile,
-        profileimage: req.file.path,
-        dob: req.body.dob
-    });
-    user.save()
-        .then(result => {
-            console.log(result);
-            const token = jwt.sign({
-                id: result._id
-            }, config.jwt.secret,{
-                expiresIn: "1h"
-            });
-            res.status(200).json({
-                result: result,
-                token: token
-            });
-        })
-        .catch(err => {
-            console.log(error);
-            res.status(500).send('An error occurred');
-        })
-    
-});
-
-router.delete('/:userid', checkAuth, function(req, res, next) {
-    const userid = req.params.userid;
-    User.remove({_id: userid}).exec()
-    .then(result => {
-        res.status(200).send(result);
-    })
-    .catch(err => console.log(err))
-});
+router.delete('/:userid', checkAuth, UsersController.deleteUser);
 
 module.exports = router;
