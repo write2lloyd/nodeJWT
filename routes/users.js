@@ -3,7 +3,14 @@ var router = express.Router();
 var config = require('../config.js');
 var mongoose = require('mongoose');
 
-mongoose.connect('mongodb+srv://mongouser:mongouser@node-jwt-vayve.mongodb.net/test?retryWrites=true',{useNewUrlParser: true});
+mongoose.connect('mongodb+srv://mongouser:mongouser@node-jwt-vayve.mongodb.net/test?retryWrites=true',
+    {
+        useNewUrlParser: true,
+        dbName: 'test'
+    }
+);
+
+
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {
