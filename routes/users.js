@@ -1,39 +1,31 @@
 var express = require('express');
 var router = express.Router();
-var config = require('../config.js');
-var mongoose = require('mongoose');
+const multer = require('multer');
+const checkAuth = require('../middleware/check-auth');
 
-mongoose.connect('mongodb+srv://mongouser:mongouser@node-jwt-vayve.mongodb.net/test?retryWrites=true',
-    {
-        useNewUrlParser: true,
-        dbName: 'test'
+const UsersController = require('../controllers/users');
+
+const storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+        cb(null, './uploads');
+    },
+    filename: function(req, file, cb) {
+        cb(null, req.body.firstname + '_' + file.originalname);
     }
-);
-
-
-var db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function() {
-  console.log('connected');
-});
-router.get('/', function(req, res, next) {
-    res.status(200).send('get all users');
 });
 
-router.get('/:userid', function(req, res, next) {
-    res.status(200).send('get one user');
-});
+const upload = multer({storage: storage});
 
-router.put('/:userid', function(req, res, next) {
-    res.status(200).send('update user');
-});
+router.get('/', UsersController.getAllUsers);
 
-router.post('/', function(req, res, next) {
-    res.status(200).send('insert user');
-});
+router.get('/:userid', UsersController.getUser);
 
-router.delete('/:userid', function(req, res, next) {
-    res.status(200).send('delete user');
-});
+router.put('/:userid', checkAuth, upload.single('displayimage'), UsersController.updateUser);
+
+router.post('/', upload.single('displayimage'), UsersController.addUser);
+
+router.post('/login', UsersController.login);
+
+router.delete('/:userid', checkAuth, UsersController.deleteUser);
 
 module.exports = router;
