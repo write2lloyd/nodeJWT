@@ -5,9 +5,10 @@ const bcrypt = require('bcrypt');
 
 module.exports = {
     getAllUsers: function(req, res, next) {
-        User.find().exec()
+        console.log('inside getAllUsers');
+        User.scan().exec()
         .then(users => {
-            console.log(users.length);
+            console.log(users);
             res.status(200).send(users);
         })
         .catch(err => {
