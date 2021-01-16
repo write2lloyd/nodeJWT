@@ -31,19 +31,25 @@ module.exports = {
         })
     },
     login: function(req, res, next) {
-        User.find({ email: req.body.email})
-        .exec()
+        User.scan().where('username').eq(req.body.username).exec()
         .then(user => {
             if (user.length < 1) {
                 return res.status(401).send('Login Failed');
             }
+
+            /**
+             * User the below to generate a hashed password
+             */
+            // const salt = bcrypt.genSaltSync();
+            // const hash = bcrypt.hashSync(req.body.password, salt);
+
             bcrypt.compare(req.body.password, user[0].password, function(err, result) {
                 if (err) {
                     return res.status(401).send('Login Failed');
                 }
                 if (result) {
                     const token = jwt.sign({
-                        email: user[0].email,
+                        username: user[0].username,
                         password: user[0].password
                     }, config.jwt.secret,{
                         expiresIn: "1h"
