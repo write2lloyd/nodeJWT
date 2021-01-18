@@ -33,6 +33,9 @@ var server = app.listen(process.env.PORT || PORT, function() {
     });
 });
 
+let AWS = require('aws-sdk');
+AWS.config.update({region:'ap-south-1'});
+
 const ddb = new dynamoose.aws.sdk.DynamoDB({
     "accessKeyId": process.env.accessKeyId,
     "secretAccessKey": process.env.secretAccessKey,
